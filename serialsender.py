@@ -27,6 +27,7 @@ class SerialSender():
         self.parent = parent
         try:
             self.ser = serial.Serial(self.port,self.baud,timeout=self.timeout)
+            self.connected = True
         except (OSError, serial.SerialException):
             msg = "Serial port not available, please chose a different one"
             print(msg)
