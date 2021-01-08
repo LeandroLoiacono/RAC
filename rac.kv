@@ -1,0 +1,104 @@
+#:kivy 2.0.0
+<RacXY>:
+  cols: 3
+  Button:
+    id: ul_but
+    text: 'UP/LEFT'
+    on_press: app.move_relative(-1,1,0)
+  Button:
+    id: u_but
+    text: 'UP'
+    on_press: app.move_relative(0,1,0)
+  Button:
+    id: ur_but
+    text: 'UP/RIGHT'
+    on_press: app.move_relative(1,1,0)
+  Button:
+    id: l_but
+    text: 'LEFT'
+    on_press: app.move_relative(-1,0,0)
+  Button:
+    id: m_but
+    text: 'HOME XY'
+    on_press: app.home(1,1,0)
+  Button:
+    id: r_but
+    text: 'RIGHT'
+    on_press: app.move_relative(1,0,0)
+  Button:
+    id: dl_but
+    text: 'DOWN/LEFT'
+    on_press: app.move_relative(-1,-1,0)
+  Button:
+    id: d_but
+    text: 'DOWN'
+    on_press: app.move_relative(0,-1,0)
+  Button:
+    id: dr_but
+    text: 'DOWN/RIGHT'
+    on_press: app.move_relative(1,-1,0)
+
+<RacZ>:
+  rows: 3
+  Button:
+    id: 'uz_but'
+    text: 'UP'
+    on_press: app.move_relative(0,0,1)
+  Button:
+    id: 'hz_but'
+    text: 'HOME Z'
+    on_press: app.home(0,0,1)
+  Button:
+    id: 'dz_but'
+    text: 'DOWN'
+    on_press: app.move_relative(0,0,-1)
+
+<Rac>:
+  orientation: 'lr-tb'
+  Label:
+    id: Header_lbl
+    text: 'Robot Arm Controller'
+    size_hint_x: 1
+    size_hint_y: 0.1
+  BoxLayout:
+    size_hint_x: 0.5
+    size_hint_y: 0.9
+    orientation: 'vertical'
+    spacing: 20
+    BoxLayout:
+      size_hint_y: 0.8
+      orientation: 'horizontal'
+      spacing: 50
+      RacXY:
+        size_hint_x: 0.8
+      RacZ:
+        size_hint_x: 0.2
+    BoxLayout:
+      orientation: 'horizontal'
+      size_hint_y: 0.2
+      Button:
+        id: home_but
+        text: 'HOME XYZ'
+        on_press: app.home(1,1,1)
+      ToggleButton:
+        id: motors_off_tgl
+        text: 'Motors Enabled'
+        on_press: app.toggleMotors(self)
+  BoxLayout:
+    size_hint_x: 0.5
+    size_hint_y: 1
+    orientation: 'vertical'
+    Label:
+      id: Console_lbl
+      text: 'Console'
+      size_hint_y: 0.1
+    TextInput:
+      id: Console_txt
+      multiline: True
+      size_hint_y: 0.5
+      text: app.console
+    #Label:
+    #  id: GCode_lbl
+    #  text: 'G-CODE'
+    #FileChooserIconView:
+    #  id: filechooser
