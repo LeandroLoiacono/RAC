@@ -5,26 +5,34 @@
     id: ul_but
     on_press: app.move_relative(-1,1)
     canvas:
-      Triangle: 
-        points: (self.x + self.width / 2, self.y, self.x, self.y+self.height,self.x+self.width, self.y+self.height / 2)
+      Line:
+        width: 2.
+        circle: (self.center_x, self.center_y, min(self.width, self.height) / 4, 0, 360)
+        bezier:
+          (self.x, self.y, self.center_x, self.center_y)
   Button:
     id: u_but
     on_press: app.move_relative(0,1)
     canvas:
-      Triangle: 
-        points: (self.x, self.y, self.x + self.width / 2 , self.y + self.height, self.x + self.width,  self.y)
+      Line:
+        width: 2.
+        circle: (self.center_x, self.center_y, min(self.width, self.height) / 4, 0, 360)
   Button:
     id: ur_but
     on_press: app.move_relative(1,1)
     canvas:
-      Triangle: 
-        points: (self.x, self.y + self.height / 2, self.x + self.width, self.y + self.height, self.x+self.width / 2, self.y)
+      Line:
+        width: 2.
+        circle: (self.center_x, self.center_y, min(self.width, self.height) / 4, 0, 360)
   Button:
     id: l_but
     on_press: app.move_relative(-1)
-    canvas:
-      Triangle: 
-        points: (self.x, self.y + self.height / 2, self.x + self.width, self.y + self.height, self.x + self.width,  self.y)
+    Image:
+      source: 'left.png'
+      y: self.parent.y + self.parent.height / 2 - 25
+      x: self.parent.x
+      size: 50, 50
+      allow_stretch: True
   Button:
     id: m_but
     text: 'HOME XY'
@@ -32,46 +40,54 @@
   Button:
     id: r_but
     on_press: app.move_relative(1)
-    canvas:
-      Triangle: 
-        points: (self.x, self.y, self.x, self.y + self.height, self.x + self.width,  self.y + self.height / 2)
+    Image:
+      source: 'right.png'
+      y: self.parent.y + self.parent.height / 2 - 25
+      x: self.parent.x + self.parent.width - 50
+      size: 50, 50
+      allow_stretch: True
   Button:
     id: dl_but
     on_press: app.move_relative(-1,-1)
-    canvas:
-      Triangle: 
-        points: (self.x, self.y, self.x + self.width / 2, self.y+self.height,self.x+self.width, self.y + self.height / 2)
+    Image:
+      source: 'left_down.png'
+      y: self.parent.y
+      x: self.parent.x
+      size: 50, 50
+      allow_stretch: True
   Button:
     id: d_but
     on_press: app.move_relative(0,-1)
-    canvas:
-      Triangle: 
-        points: (self.x + self.width / 2, self.y, self.x, self.y + self.height,self.x+self.width, self.y+self.height)
+    Image:
+      source: 'down.png'
+      y: self.parent.y
+      x: self.parent.x + self.parent.width / 2 - 25
+      size: 50, 50
+      allow_stretch: True
   Button:
     id: dr_but
     on_press: app.move_relative(1,-1)
-    canvas:
-      Triangle: 
-        points: (self.x, self.y + self.height / 2, self.x + self.width / 2, self.y + self.height, self.x + self.width, self.y)
+    Image:
+      source: 'right_down.png'
+      y: self.parent.y 
+      x: self.parent.x + self.parent.width - 50
+      size: 50, 50
+      allow_stretch: True
 
 <RacZ>:
   rows: 3
   Button:
     id: 'uz_but'
+    text: 'UP'
     on_press: app.move_relative(0,0,1)
-    canvas:
-      Triangle: 
-        points: (self.x, self.y, self.x + self.width / 2 , self.y + self.height, self.x + self.width,  self.y)
   Button:
     id: 'hz_but'
     text: 'HOME Z'
     on_press: app.home(0,0,1)
   Button:
     id: 'dz_but'
+    text: 'DOWN'
     on_press: app.move_relative(0,0,-1)
-    canvas:
-      Triangle: 
-        points: (self.x + self.width / 2, self.y, self.x, self.y + self.height,self.x+self.width, self.y+self.height)
 
 <Rac>:
   orientation: 'lr-tb'
