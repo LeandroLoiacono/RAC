@@ -3,6 +3,8 @@ import serial
 import time
 import sys
 import os
+import threading
+
 from serial.tools import list_ports
 
 colorPickZ = -63
@@ -17,11 +19,12 @@ waterY = 150
 class SerialSender():
     port = ''
     baud = 115200
-    timeout = None
+    timeout = 1
     ser = None
     connected = False
     parent = None
     ports_available = ""
+    waiting_operation = False
 
     def __init__(self, parent):
         super(SerialSender, self).__init__()
@@ -31,35 +34,38 @@ class SerialSender():
 
     def connect(self):
         try:
-            msg = "Trying to connect to port " + self.port
-            print(msg)
-            self.parent.appendOnConsole(msg)
+            msg = 'Trying to connect to port ' + self.port + '\r\n'
+            self.parent.appendOnConsole(msg, True)
             self.ser = serial.Serial(self.port,self.baud,timeout=self.timeout)
             self.connected = True
-            msg = "Connected!"
-            print(msg)
-            self.parent.appendOnConsole(msg)
+            msg = 'Connected!\r\n'
+            self.parent.appendOnConsole(msg,True)
+            while self.connected:
+                a = self.ser.readline()
+                if(a != None and a != b'' and a != ''):
+                    msg = a.decode("utf-8")
+                    self.parent.appendOnConsole(msg, True)
+                else:
+                    break
+            time.sleep(0.1)
         except (OSError, serial.SerialException):
-            msg = "Serial port not available, please chose a different one"
-            print(msg)
-            self.parent.appendOnConsole(msg)
+            msg = "Serial port not available, please chose a different one\r\n"
+            self.parent.appendOnConsole(msg, True)
             self.serial_ports()
         time.sleep(2)
 
     def serial_ports(self):
         all_port_tuples = list_ports.comports()
         #logging.info("listing serial ports")
-        msg = "listing serial ports"
-        print(msg)
+        msg = "listing serial ports\n"
+        #print(msg)
         self.parent.appendOnConsole(msg)
         all_ports = set()
         i = 0
         for ap, _, _ in all_port_tuples:
             p = os.path.basename(ap)
-            print(p)
             if p.startswith("ttyUSB") or p.startswith("ttyACM"):
                 all_ports |= {ap}
-                #logging.info("\t%s", str(ap))
                 msg = str(ap)
                 if(self.ports_available != ""):
                     self.ports_available += ","
@@ -67,46 +73,51 @@ class SerialSender():
                 if(i == 0):
                     self.port = msg
                 i = i + 1
-                msg = "\t" + msg
-                print(msg)
+                msg = "\t" + msg + "\n"
                 self.parent.appendOnConsole(msg)
 
         if len(all_ports) == 0:
             #logging.error("No valid port detected!. Possibly, device not plugged/detected.")
-            msg = "No valid port detected!. Possibly, device not plugged/detected."
-            print(msg)
+            msg = "No valid port detected!. Possibly, device not plugged/detected.\n"
+            #print(msg)
             self.parent.appendOnConsole(msg)
             #raise NoValidPortError()
 
         elif len(all_ports) > 2:
             #logging.info("Several port detected, using first one: %s", str(all_ports))
-            msg = "Several port detected, using first one: " + ",".join(all_ports)
-            print(msg)
+            msg = "Several port detected, using first one: " + ",".join(all_ports) + "\n"
+            #print(msg)
             self.parent.appendOnConsole(msg)
         #return all_ports.pop()
 
-
-
     def wait_complete(self):
-        waitstatus = 1
         while True:
             a = self.ser.readline()
-            if "ok" in a.decode("utf-8"):
-                waitstatus = 0
-                return None
+            if("ok" not in a.decode("utf-8")):
+                msg = a.decode("utf-8")
+                self.parent.appendOnConsole(msg)
             else:
-                return a
-
+                break
+        time.sleep(0.1)
+       
     def send_command(self, cmd_param):
         if(self.connected):
-            bCmd = (cmd_param + '\r').encode('utf-8')
-            self.ser.write(bCmd)
-            #print(bCmd)
-            ret = self.wait_complete()
-            time.sleep(0.1)
-            return ret
+            try:
+                bCmd = (cmd_param + '\r').encode('utf-8')
+                self.ser.write(bCmd)
+                ret = self.ser.readline()
+                #print('ret: ' + str(ret))
+                self.parent.appendOnConsole(ret.decode("utf-8"))
+                #print(bCmd)
+                threading.Thread(target=self.wait_complete).start()
+            except (OSError, serial.SerialException):
+                msg = "Serial write failure, check connection\n"
+                #print(msg)
+                self.parent.appendOnConsole(msg)
+            return True
         else:
-            return "Not connected"
+            self.parent.appendOnConsole("Not connected\r\n")
+            return False
     
     #def set_port(self, port):
     #    self.port = port

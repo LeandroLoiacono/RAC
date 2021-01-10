@@ -6,25 +6,25 @@
     on_press: app.move_relative(-1,1)
     canvas:
       Triangle: 
-        points: (self.x + self.width / 2, self.y, self.x, self.y+self.height,self.x+self.width, self.y+self.height / 2)
+        points: (self.x + self.width / 4, self.y + self.height / 4, self.center_x - self.width / 4, self.center_y + self.height / 4, self.x + self.width - self.width / 4, self.y + self.height *  3/4)
   Button:
     id: u_but
     on_press: app.move_relative(0,1)
     canvas:
       Triangle: 
-        points: (self.x, self.y, self.x + self.width / 2 , self.y + self.height, self.x + self.width,  self.y)
+        points: (self.x + self.width / 4, self.y + self.height / 4, self.center_x, self.center_y + self.height / 4, self.center_x + self.width / 4,  self.y + self.height / 4)
   Button:
     id: ur_but
     on_press: app.move_relative(1,1)
     canvas:
       Triangle: 
-        points: (self.x, self.y + self.height / 2, self.x + self.width, self.y + self.height, self.x+self.width / 2, self.y)
+        points: (self.x + self.width / 4, self.center_y + self.height / 4, self.center_x + self.width / 4, self.center_y + self.height / 4, self.center_x + self.width / 4, self.y + self.height / 4)
   Button:
     id: l_but
     on_press: app.move_relative(-1)
     canvas:
       Triangle: 
-        points: (self.x, self.y + self.height / 2, self.x + self.width, self.y + self.height, self.x + self.width,  self.y)
+        points: (self.x + self.width / 4, self.center_y, self.center_x + self.width / 4, self.center_y + self.height / 4, self.center_x + self.width / 4,  self.y + self.height / 4)
   Button:
     id: m_but
     text: 'HOME XY'
@@ -34,47 +34,70 @@
     on_press: app.move_relative(1)
     canvas:
       Triangle: 
-        points: (self.x, self.y, self.x, self.y + self.height, self.x + self.width,  self.y + self.height / 2)
+        points: (self.x + self.width / 4, self.y + self.height / 4, self.x + self.width / 4, self.center_y + self.height / 4, self.center_x + self.width / 4,  self.center_y)
   Button:
     id: dl_but
     on_press: app.move_relative(-1,-1)
     canvas:
       Triangle: 
-        points: (self.x, self.y, self.x + self.width / 2, self.y+self.height,self.x+self.width, self.y + self.height / 2)
+        points: (self.x + self.width / 4, self.y + self.height / 4, self.x + self.width / 4, self.center_y + self.height / 4, self.center_x + self.width / 4, self.y + self.height / 4)
   Button:
     id: d_but
     on_press: app.move_relative(0,-1)
     canvas:
       Triangle: 
-        points: (self.x + self.width / 2, self.y, self.x, self.y + self.height,self.x+self.width, self.y+self.height)
+        points: (self.center_x, self.y + self.height / 4, self.x + self.width / 4, self.center_y + self.height / 4,self.center_x + self.width / 4, self.center_y + self.height / 4)
   Button:
     id: dr_but
     on_press: app.move_relative(1,-1)
     canvas:
       Triangle: 
-        points: (self.x, self.y + self.height / 2, self.x + self.width / 2, self.y + self.height, self.x + self.width, self.y)
+        points: (self.x + self.width / 4, self.y + self.height / 4, self.center_x + self.width / 4, self.center_y + self.height / 4, self.center_x + self.width / 4, self.y + self.height / 4)
 
 <RacZ>:
-  rows: 3
+  cols: 3
+  Button:
+    disabled: True
   Button:
     id: 'uz_but'
     on_press: app.move_relative(0,0,1)
     canvas:
       Triangle: 
-        points: (self.x, self.y, self.x + self.width / 2 , self.y + self.height, self.x + self.width,  self.y)
+        points: (self.x + self.width / 4, self.y + self.height / 4, self.center_x, self.center_y + self.height / 4, self.center_x + self.width / 4,  self.y + self.height / 4)
   Button:
-    id: 'hz_but'
-    text: 'HOME Z'
-    on_press: app.home(0,0,1)
+    disabled: True
+  Button:
+    id: 'le_but'
+    text: 'E--'
+    on_press: app.move_relative(0,0,0,-1)
+  GridLayout:
+    rows: 2
+    Button:
+      id: 'hz_but'
+      text: 'HOME Z'
+      on_press: app.home(0,0,1)
+    Button:
+      id: 'he_but'
+      text: 'HOME E'
+      on_press: app.home(0,0,0,1)
+  Button:
+    id: 're_but'
+    text: 'E++'
+    on_press: app.move_relative(0,0,0,1)
+  Button:
+    disabled: True
   Button:
     id: 'dz_but'
     on_press: app.move_relative(0,0,-1)
     canvas:
       Triangle: 
-        points: (self.x + self.width / 2, self.y, self.x, self.y + self.height,self.x+self.width, self.y+self.height)
+        points: (self.center_x, self.y + self.height / 4, self.x + self.width / 4, self.center_y + self.height / 4,self.center_x + self.width / 4, self.center_y + self.height / 4)
+  Button:
+    disabled: True
 
 <Rac>:
   orientation: 'lr-tb'
+  spacing: 20
   Label:
     id: Header_lbl
     text: 'Robot Arm Controller'
@@ -88,18 +111,19 @@
     BoxLayout:
       size_hint_y: 0.8
       orientation: 'horizontal'
-      spacing: 50
+      spacing: 20
       RacXY:
-        size_hint_x: 0.8
+        size_hint_x: 0.5
       RacZ:
-        size_hint_x: 0.2
+        size_hint_x: 0.5
     BoxLayout:
       orientation: 'horizontal'
       size_hint_y: 0.2
+      spacing: 20
       Button:
         id: home_but
-        text: 'HOME XYZ'
-        on_press: app.home(1,1,1)
+        text: 'AUTO HOME'
+        on_press: app.home(1,1,1,1)
       ToggleButton:
         id: motors_tgl
         text: 'Motors Enabled'
@@ -108,28 +132,36 @@
       ToggleButton:
         id: grpper_tgl
         text: 'Toggle Gripper'
-        #state: app.motorsToggleState
         on_press: app.toggleGripper(self)
       Spinner:
         id: step_spinner
         text: str(app.step)
-        values: '0.1', '1', '10'
+        values: '0.1', '1', '10', '50'
         on_text: app.setStep(self.text)
     Label:
-      id: E_Axis_lbl
-      text: 'E Axis'
-      size_hint_y: 0.01
+      id: Feed Rate_lbl
+      text: 'Feed Rate (Speed): ' + str(app.f)
+      size_hint_y: None
+      height: '20sp'
     Slider:
-      id: e_slider
+      id: f_slider
       min: 0
       max: 100
+      step: 1
+      value: app.f
+      size_hint_y: None
+      height: '20sp'
+      on_touch_up: app.setFeedRate(self.value) 
+    Button:
+      disabled: True
   BoxLayout:
     size_hint_x: 0.5
     size_hint_y: 1
     orientation: 'vertical'
     BoxLayout:
       orientation: 'horizontal'
-      size_hint_y: 0.05
+      size_hint_y: None
+      height: '30sp'
       Label:
         id: port_lbl
         text: 'COM Port'
@@ -140,31 +172,45 @@
         size_hint_x: 0.8
     BoxLayout:
       orientation: 'horizontal'
-      size_hint_y: 0.05
+      size_hint_y: None
+      height: '30sp'
       Spinner:
         id: port_spinner
         text: str(app.port)
         values: (app.ports_available,) 
         on_text: app.setPort(self.text)
         size_hint_x: 0.2
+      Button:
+        text: 'search COM'
+        on_press: app.checkPorts()
+        size_hint_x: 0.1
       TextInput:
         id: gcode_txt
         multiline: False
-        size_hint_x: 0.6
+        size_hint_x: 0.5
       Button:
         id: gcode_btn
         text: 'Send'
         size_hint_x: 0.2
         on_press: app.send_gcode(gcode_txt)
-    Label:
-      id: Console_lbl
-      text: 'Console'
-      size_hint_y: 0.05
+    BoxLayout:
+      orientation: 'horizontal'
+      size_hint_y: None
+      height: '30sp'
+      Label:
+        id: Console_lbl
+        text: 'Console'
+        size_hint_x: 0.8
+      Button:
+        id: Console_clear_btn
+        text: 'Clear'
+        on_press: Console_txt.text = ''
+        size_hint_x: 0.2
     TextInput:
       id: Console_txt
       multiline: True
-      size_hint_y: 0.5
-      text: app.console
+      size_hint_y: 0.8
+      text: ''
     #Label:
     #  id: GCode_lbl
     #  text: 'G-CODE'
