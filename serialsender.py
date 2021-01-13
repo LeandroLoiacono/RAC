@@ -64,7 +64,7 @@ class SerialSender():
         i = 0
         for ap, _, _ in all_port_tuples:
             p = os.path.basename(ap)
-            if p.startswith("ttyUSB") or p.startswith("ttyACM"):
+            if p.startswith("ttyUSB") or p.startswith("ttyACM") or p.startswith("cu."):
                 all_ports |= {ap}
                 msg = str(ap)
                 if(self.ports_available != ""):
