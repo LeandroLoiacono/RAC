@@ -38,6 +38,7 @@ class RacApp(App):
   port = StringProperty("")
   ports_available = StringProperty("")
   ready = False
+  gcodeFile = ''
 
 
   sender = None
@@ -138,5 +139,11 @@ class RacApp(App):
 
   def on_request_close(self):
     self.sender.close()
-
+  
+  def runFile(self):
+    if(self.gcodeFile != ''):
+      self.send_gcode('M17')
+      self.send_command('G90')
+      self.isRelative = False
+      self.sender.run_file(self.gcodeFile)
 RacApp().run()

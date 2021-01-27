@@ -119,6 +119,14 @@ class SerialSender():
             self.parent.appendOnConsole("Not connected\r\n")
             return False
     
+    def run_file(self, filename):
+        with open(filename) as fp: 
+            for line in fp: 
+                cmd = line.split('(')[0].strip();
+                if(cmd != '%' and len(cmd) > 0 and cmd[0] != ';' and cmd[0] != '('):
+                    self.send_command(cmd)
+
+    
     #def set_port(self, port):
     #    self.port = port
     #    self.connect()

@@ -152,8 +152,19 @@
       size_hint_y: None
       height: '20sp'
       on_touch_up: app.setFeedRate(self.value) 
+    Label:
+      id: File_lbl
+      text: 'G-CODE FILE'
+    FileChooserListView :
+    #FileChooserIconView:
+      id: filechooser
+      on_selection: app.gcodeFile = self.selection and self.selection[0] or ''; run_btn.disabled = app.gcodeFile == ''
+      filters: ['*.gcode']
     Button:
+      id: run_btn
+      text: 'Run G-Code File'
       disabled: True
+      on_press: app.runFile()
   BoxLayout:
     size_hint_x: 0.5
     size_hint_y: 1
@@ -188,6 +199,7 @@
         id: gcode_txt
         multiline: False
         size_hint_x: 0.5
+        on_text_validate: app.send_gcode(self)
       Button:
         id: gcode_btn
         text: 'Send'
@@ -211,8 +223,3 @@
       multiline: True
       size_hint_y: 0.8
       text: ''
-    #Label:
-    #  id: GCode_lbl
-    #  text: 'G-CODE'
-    #FileChooserIconView:
-    #  id: filechooser
