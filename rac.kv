@@ -146,8 +146,8 @@
     Slider:
       id: f_slider
       min: 0
-      max: 3000
-      step: 1
+      max: app.maxSpeed 
+      step: 1 if app.firmware == 'Community' else 10
       value: app.f
       size_hint_y: None
       height: '20sp'
@@ -209,6 +209,22 @@
       orientation: 'horizontal'
       size_hint_y: None
       height: '30sp'
+      ToggleButton:
+        id: wait_ok_tgl
+        text: 'Wait for OK'
+        state: 'down' if app.wait_for_ok else 'normal'
+        on_press: app.toggleWaitOK(self)
+        #size_hint_x: 0.5
+      Spinner:
+        id: fw_spinner
+        text: str(app.firmware)
+        values: 'Community', 'Marlin'
+        on_text: app.setFirmware(self.text)
+        #size_hint_x: 0.5
+    BoxLayout:
+      orientation: 'horizontal'
+      size_hint_y: None
+      height: '30sp'
       Label:
         id: Console_lbl
         text: 'Console'
@@ -221,5 +237,5 @@
     TextInput:
       id: Console_txt
       multiline: True
-      size_hint_y: 0.8
+      size_hint_y: 0.2
       text: ''

@@ -6,6 +6,10 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from serialsender import SerialSender
 from kivy.properties import BooleanProperty, NumericProperty,  StringProperty
+from kivy.core.window import Window
+#from kivy.uix.widget import Widget
+
+#from kivy.garden.joystick import Joystick
 
 
 class Rac(StackLayout):
@@ -24,7 +28,6 @@ class RacApp(App):
   START_Y = 200
   START_Z = 120
   START_E = 0
-  isRelative = BooleanProperty(False)
   step = NumericProperty(10)
   consoleBufferSize = 100
   consoleSize = 0
@@ -39,16 +42,65 @@ class RacApp(App):
   ports_available = StringProperty("")
   ready = False
   gcodeFile = ''
+  wait_for_ok = False
+  firmware = "Community"
+  maxSpeed = 100
 
+  isRelative = BooleanProperty(False)
 
-  sender = None
+  def __init__(self, **kwargs):
+    super(RacApp, self).__init__(**kwargs)
+    self._keyboard = Window.request_keyboard(self._keyboard_closed, self.root, 'text')
+    if self._keyboard.widget:
+        # If it exists, this widget is a VKeyboard object which you can use
+        # to change the keyboard layout.
+        pass
+    self._keyboard.bind(on_key_down=self._on_keyboard_down)
+  
+  def _keyboard_closed(self):
+    pass
+    #print('RAC keyboard have been closed!')
+    #self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+    #self._keyboard = None
+
+  def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+    #print('The key', keycode, 'have been pressed')
+    #print(' - text is %r' % text)
+    #print(' - modifiers are %r' % modifiers)
+    
+    if keycode[1] == 'up':
+      self.move_relative(0,1)
+    elif keycode[1] == 'down':
+      self.move_relative(0,-1)
+    elif keycode[1] == 'left':
+      self.move_relative(-1,0)
+    elif keycode[1] == 'right':
+      self.move_relative(1,0)
+    if keycode[1] == 'w':
+      self.move_relative(0,0,1)
+    elif keycode[1] == 'a':
+      self.move_relative(0,0,0,-1)
+    elif keycode[1] == 's':
+      self.move_relative(0,0,-1)
+    elif keycode[1] == 'd':
+      self.move_relative(0,0,0,1)
+    
+    # Keycode is composed of an integer + a string
+    # If we hit escape, release the keyboard
+    if keycode[1] == 'escape':
+        keyboard.release()
+
+    # Return True to accept the key. Otherwise, it will be used by
+    # the system.
+    return True
 
   def build(self):
     self.root = Rac()
     self.sender = SerialSender(self)
     self.port = self.sender.port
 
-  def appendOnConsole(self, message, direct = False):
+    
+  def appendToConsole(self, message, direct = False):
     if (self.consoleSize < self.consoleBufferSize):
       if direct:
         self.root.ids.Console_txt.text += message
@@ -59,7 +111,7 @@ class RacApp(App):
       self.root.ids.Console_txt.insert_text(message)
       self.consoleSize = 0
       self.root.ids.Console_txt.text = ''
-
+  
   def move_relative(self, x = 0.0, y = 0.0, z = 0.0, e = 0.0):
     if(self.isRelative == False):
       self.send_command('G91')
@@ -70,27 +122,27 @@ class RacApp(App):
     self.e = e
     cmd = 'G1 X' + str(x*self.step) + ' Y' + str(y*self.step) + ' Z' + str(z*self.step) + ' E' + str(e*self.step) + ' F' + str(self.f)
     self.send_command(cmd)
-
+    
   def home(self, x = 0, y = 0, z = 0, e = 0):
-    if(self.isRelative == True):
-      self.send_command('G90')
-      self.isRelative = False
-    if( x==1 and y ==1 and z==1):
-      cmd = 'G28'
-    else:
-      cmd = 'G1'
+      if(self.isRelative == True):
+          self.send_command('G90')
+          self.isRelative = False
+      if( x==1 and y ==1 and z==1):
+          cmd = 'G28'
+      else:
+          cmd = 'G1'
       if(x == 1):
-        cmd += ' X' + str(self.START_X)
+          cmd += ' X' + str(self.START_X)
       if(y == 1):
-        cmd += ' Y' + str(self.START_Y)
+          cmd += ' Y' + str(self.START_Y)
       if(z == 1):
-        cmd += ' Z' + str(self.START_Z)
+          cmd += ' Z' + str(self.START_Z)
       if(e == 1):
-        cmd += ' E' + str(self.START_E)
-    ret = self.send_command(cmd)
-    if(ret != False):
+          cmd += ' E' + str(self.START_E)
+      ret = self.send_command(cmd)
+      if(ret != False):
         self.updateGUI(cmd)
-  
+    
   def setFeedRate(self, feedRate):
     if(feedRate != self.f):
       self.f = feedRate
@@ -98,18 +150,33 @@ class RacApp(App):
 
   def toggleMotors(self, toggleMotors):
     if(toggleMotors.state == 'down'):
-        self.send_command('M17')
+      self.send_command('M17')
     else:
-        self.send_command('M18')
+      self.send_command('M18')
   
   def toggleGripper(self, toggleGripper):
     if(toggleGripper.state == 'down'):
-        self.send_command('M3')
+      self.send_command('M3')
     else:
-        self.send_command('M5')
-  
+      self.send_command('M5')
+
+  def toggleWaitOK(self, toggleWaitOK):
+    if(toggleWaitOK.state == 'down'):
+      self.wait_for_ok = True
+    else:
+      self.wait_for_ok = False
+
   def setStep(self, step):
     self.step = float(step)
+  
+  def setFirmware(self, firmware):
+    self.firmware = firmware
+    if(self.firmware == "Community"):
+      self.maxSpeed = 100
+      self.wait_for_ok = True
+    else:
+      self.maxSpeed = 3000
+      self.wait_for_ok = False
   
   def setPort(self, step):
     self.sender.port = step
@@ -119,7 +186,7 @@ class RacApp(App):
     self.sender.serial_ports()
 
   def send_command(self, cmd):
-    self.appendOnConsole(cmd + '\r\n')
+    self.appendToConsole(cmd + '\r\n')
     ret = self.sender.send_command(cmd)
     return ret
 
@@ -146,4 +213,5 @@ class RacApp(App):
       self.send_command('G90')
       self.isRelative = False
       self.sender.run_file(self.gcodeFile)
+
 RacApp().run()
